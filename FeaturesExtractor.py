@@ -4,6 +4,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from utils import UrlFeaturesExtractor, urlToCsventry, getTokens
+import torch
+import transformers as ppb
+from transformers import BertTokenizer
+
 
 
 class FeaturesExtractor:
@@ -90,5 +94,31 @@ class FeaturesExtractor:
 
 
     def getBertEmedding():
+
+        tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
+        model_class_bert, tokenizer_class_bert, pretrained_weights_bert = (ppb.BertModel, ppb.BertTokenizer, 'bert-base-uncased')
+        model = model_class_bert.from_pretrained(pretrained_weights_bert)
+
+
+        urls = self.X_train['url']
+        tokenized = urls.apply((lambda x: tokenizer.encode(x, add_special_tokens=True, max_length = 512, truncation = True)))
+
+
+        max_len = 0
+        for i in tokenized.values:
+            if len(i) > max_len:
+                max_len = len(i)
+
+        padded = np.array([i + [0]*(max_len-len(i)) for i in tokenized.values])
+
+        attention_mask = np.where(padded != 0, 1, 0)
+
+        input_ids = torch.tensor(padded)
+        attention_mask = torch.tensor(attention_mask)
+
+        with torch.no_grad():
+            last_hidden_states = model(input_ids, attention_mask=attention_mask)
+
+        X_train = last_hidden_states[0][:,0,:].numpy()
 
         pass
