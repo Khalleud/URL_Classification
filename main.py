@@ -17,7 +17,7 @@ if __name__ == "__main__":
     print('Read Data...')
     df = pd.read_csv('Data.csv')
 
-    df = df[:1100]
+    
 
     y = df[['target']]
     X = df
