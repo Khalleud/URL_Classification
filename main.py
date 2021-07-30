@@ -59,7 +59,9 @@ if __name__ == "__main__":
 
 
         sys.stdout = f # Change the standard output to the file we created.
-        print(all_report)
+        print("Report:")
+        for c in all_report:
+            print(c, all_report[c])
         print('accuracy : {}'.format(accuracy))
         print('weighted_Precision : {}'.format(weighted_avg['precision']))
         print('weighted_Recall    : {}'.format(weighted_avg['recall']))

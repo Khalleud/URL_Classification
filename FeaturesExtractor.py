@@ -7,6 +7,7 @@ from utils import UrlFeaturesExtractor, urlToCsventry, getTokens
 import torch
 import transformers as ppb
 from transformers import BertTokenizer
+from sklearn.preprocessing import MinMaxScaler
 
 
 
@@ -38,6 +39,13 @@ class FeaturesExtractor:
 
             X_test.loc[index] = urlToCsventry(row['url'])
 
+
+        min_max_scaler = MinMaxScaler()
+        X_train = features.drop(['url', 'domain', 'domainExtension'], axis = 1, inplace = True )
+        X_test = features.drop(['url', 'domain', 'domainExtension'], axis = 1, inplace = True )
+
+        X_train = min_max_scaler.fit_transform(X_train)
+        X_test = min_max_scaler.fit_transform(X_test)
 
         return X_train, X_test
 
